@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import axios from 'axios'
 
 function UserRegistration() {
   const [registrationData, setRegistrationData] = useState({
@@ -14,9 +15,31 @@ function UserRegistration() {
     setRegistrationData({ ...registrationData, [name]: value })
   }
 
-  function handleSubmit(event) {
+  const handleSubmit = async (event) => {
     event.preventDefault()
-    console.log('Registration data:', registrationData)
+
+    try {
+      const response = await axios.post('http://localhost:8001/user/add', registrationData)
+
+      if (response.status === 201) {
+        console.log('Registration successful:', response.data)
+        alert('Registration successful')
+      } else {
+        console.error('Registration failed:', response)
+        alert('Registration failed')
+      }
+    } catch (error) {
+      if (error.response) {
+        console.error('Error in response:', error.response.data)
+        alert(error.response.data?.message || 'Error in response')
+      } else if (error.request) {
+        console.error('Error in request:', error.request)
+        alert('Error in request')
+      } else {
+        console.error('Error:', error.message)
+        alert('Something went wrong')
+      }
+    }
   }
 
   return (
